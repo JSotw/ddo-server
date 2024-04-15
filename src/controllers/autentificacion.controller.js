@@ -75,10 +75,8 @@ export const register = async (req, res) => {
       rol: usuarioGuardado.rol,
       createdAt: usuarioGuardado.createdAt,
       updatedAt: usuarioGuardado.updatedAt,
-    })
-    console.log(
-      usuario["body"]
-    );
+    });
+    console.log(usuario["body"]);
   } catch (error) {
     console.log(error);
   }
@@ -91,35 +89,41 @@ export const logout = (req, res) => {
   return res.sendStatus(200);
 };
 
-export const profile = async (req, res) => {
-  const usuarioEncontrado = await User.findById(req.user.id);
-  if (!usuarioEncontrado)
-    return res.status(400).json({ message: "Usuario no encontrado" });
+// export const profile = async (req, res) => {
+//   const usuarioEncontrado = await User.findById(req.user.id);
+//   if (!usuarioEncontrado)
+//     return res.status(400).json({ message: "Usuario no encontrado" });
 
-  return res.json({
-    id: usuarioEncontrado._id,
-    username: usuarioEncontrado.username,
-    email: usuarioEncontrado.email,
-    createdAt: usuarioEncontrado.createdAt,
-    updatedAt: usuarioEncontrado.updatedAt,
-  });
-};
+//   return res.json({
+//     id: usuarioEncontrado._id,
+//     username: usuarioEncontrado.username,
+//     email: usuarioEncontrado.email,
+//     createdAt: usuarioEncontrado.createdAt,
+//     updatedAt: usuarioEncontrado.updatedAt,
+//   });
+// };
 
-export const verifyToken = async (req, res) => {
+export const verificarToken = async (req, res) => {
   const { token } = req.cookies;
   if (!token) return res.status(401).json({ message: "No autorizado" });
   jwt.verify(token, TOKEN_SECRET, async (err, user) => {
     if (err) return res.status(401).json({ message: "No autorizado" });
 
-    const usuarioEncontrado = await User.findById(user.id);
+    const usuarioEncontrado = await usuarioModel.findById(user.id);
+    
     if (!usuarioEncontrado)
       return res.status(401).json({ message: "No autorizado" });
 
     return res.json({
-      id: usuarioEncontrado._id,
-      username: usuarioEncontrado.username,
-      email: usuarioEncontrado.email,
-      permissions: usuarioEncontrado.permissions,
+      nombre: usuarioEncontrado.nombre,
+      apellido_p: usuarioEncontrado.apellido_p,
+      apellido_m: usuarioEncontrado.apellido_m,
+      correo: usuarioEncontrado.correo,
+      contrasenia: usuarioEncontrado.contrasenia,
+      imagen_perfil: usuarioEncontrado.imagen_perfil,
+      rol: usuarioEncontrado.rol,
+      createdAt: usuarioEncontrado.createdAt,
+      updatedAt: usuarioEncontrado.updatedAt,
     });
   });
 };
