@@ -11,14 +11,22 @@ const pedidoSchema = new Mongoose.Schema(
       type: String,
       required: true,
     },
-    pedido: {
+    detalles: {
       type: Object,
       required: true,
     },
-    precio_total: {
+    pagos:{
+      type: Object,
+      required: true,
+    },
+    monto_total: {
       type: Number,
       required: true,
-    } 
+    } ,
+    estado: {
+      type: Object,
+      required: true,
+    } ,
   },
   {
     timestamps: true,
