@@ -52,37 +52,42 @@ export const register = async (req, res) => {
   } = req.body;
 
   try {
-    const contraseniaEncriptada = await bcrypt.hash(contrasenia, 10); //contraseña encriptada
+    const usuarioEncontrado = await usuarioModel.findOne({ nombre_usuario });
+    if (!usuarioEncontrado){
+      const contraseniaEncriptada = await bcrypt.hash(contrasenia, 10); //contraseña encriptada
 
-    console.log(contraseniaEncriptada);
-    const nuevoUsuario = new usuarioModel({
-      nombre_usuario,
-      nombre,
-      apellido_p,
-      apellido_m,
-      correo,
-      contrasenia: contraseniaEncriptada,
-      imagen_perfil,
-      rol,
-      createdAt,
-      updatedAt,
-    });
-    const usuarioGuardado = await nuevoUsuario.save();
-    // const token = await crearTokenAcceso({ id: usuarioGuardado._id });
-    // res.cookie("token", token);
-    const usuario = await res.json({
-      nombre_usuario: usuarioGuardado.nombre_usuario,
-      nombre: usuarioGuardado.nombre,
-      apellido_p: usuarioGuardado.apellido_p,
-      apellido_m: usuarioGuardado.apellido_m,
-      correo: usuarioGuardado.correo,
-      contrasenia: usuarioGuardado.contrasenia,
-      imagen_perfil: usuarioGuardado.imagen_perfil,
-      rol: usuarioGuardado.rol,
-      createdAt: usuarioGuardado.createdAt,
-      updatedAt: usuarioGuardado.updatedAt,
-    });
-    console.log(usuario);
+      console.log(contraseniaEncriptada);
+      const nuevoUsuario = new usuarioModel({
+        nombre_usuario,
+        nombre,
+        apellido_p,
+        apellido_m,
+        correo,
+        contrasenia: contraseniaEncriptada,
+        imagen_perfil,
+        rol,
+        createdAt,
+        updatedAt,
+      });
+      const usuarioGuardado = await nuevoUsuario.save();
+      // const token = await crearTokenAcceso({ id: usuarioGuardado._id });
+      // res.cookie("token", token);
+      const usuario = await res.json({
+        nombre_usuario: usuarioGuardado.nombre_usuario,
+        nombre: usuarioGuardado.nombre,
+        apellido_p: usuarioGuardado.apellido_p,
+        apellido_m: usuarioGuardado.apellido_m,
+        correo: usuarioGuardado.correo,
+        contrasenia: usuarioGuardado.contrasenia,
+        imagen_perfil: usuarioGuardado.imagen_perfil,
+        rol: usuarioGuardado.rol,
+        createdAt: usuarioGuardado.createdAt,
+        updatedAt: usuarioGuardado.updatedAt,
+      });
+      console.log(usuario);
+    }else{
+      return res.status(401).json(["Usuario ya existente"]);//Código podría cambiar
+    }
   } catch (error) {
     console.log(error);
   }
