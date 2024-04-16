@@ -1,6 +1,6 @@
 import Mongoose from "mongoose";
 
-const pastelSchema = new Mongoose.Schema(
+const productoSchema = new Mongoose.Schema(
   {
     id: {
       type: String,
@@ -14,8 +14,8 @@ const pastelSchema = new Mongoose.Schema(
       type: String,
       required: true,
     },
-    ingredientes: {
-      type: Array,
+    detalles: {
+      type: Object,
       required: true,
     },
     precio: {
@@ -38,4 +38,4 @@ const pastelSchema = new Mongoose.Schema(
   }
 );
 
-export default Mongoose.model("Pastel", pastelSchema);
+export default Mongoose.model("Producto", productoSchema);

@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import Mongoose from "mongoose";
 
 const usuarioSchema = new Mongoose.Schema(
@@ -26,8 +27,9 @@ const usuarioSchema = new Mongoose.Schema(
       type: String,
     },
     rol: {
-      type: String,
-      require: true,
+      type: ObjectId,
+      ref: "Rol",
+      //require: true,
     }
   },
   {

@@ -9,6 +9,7 @@ export const login = async (req, res) => {
 
   try {
     const usuarioEncontrado = await usuarioModel.findOne({ contrasenia });
+    
     if (!usuarioEncontrado)
       return res.status(400).json(["No se encuentra la contraseña"]);
 

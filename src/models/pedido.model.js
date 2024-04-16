@@ -7,9 +7,12 @@ const pedidoSchema = new Mongoose.Schema(
       ref: "Usuario",
       required: true,
     },
-    id_pastel: {
-      type: Types.ObjectId,
-      ref: "Pastel",
+    nombre_retiro: {
+      type: String,
+      required: true,
+    },
+    pedido: {
+      type: Object,
       required: true,
     },
   },
