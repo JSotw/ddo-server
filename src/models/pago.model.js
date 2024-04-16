@@ -17,8 +17,3 @@ const pagoSchema = new Mongoose.Schema(
 );
 
 export default Mongoose.model("Pago", pagoSchema);
-
-
-
-
-//  ESTO ES UNA PRUEBA DE SI SE SINCRONIZA O NO XD
