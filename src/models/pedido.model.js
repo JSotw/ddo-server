@@ -15,6 +15,10 @@ const pedidoSchema = new Mongoose.Schema(
       type: Object,
       required: true,
     },
+    precio_total: {
+      type: Number,
+      required: true,
+    } 
   },
   {
     timestamps: true,

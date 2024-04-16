@@ -1,0 +1,38 @@
+{
+  "agregados": [
+    {
+      "nombre": "pan",
+      "ingredientes": [
+        {
+          "nombre": "marraqueta",
+          "precio": 500,
+          "cantMaxima": 1
+        },
+        {
+          "nombre": "Pan Sandwich",
+          "precio": 600,
+          "cantMaxima": 1
+        }
+      ],
+      "minimoSelec": 1,
+      "maximoSelect": 1
+    },
+    {
+      "nombre": "aderezo",
+      "ingredientes": [
+        {
+          "nombre": "mostaza",
+          "precio": 0,
+          "cantMaxima": 1
+        },
+        {
+          "nombre": "mayonesa",
+          "precio": 600,
+          "cantMaxima": 1
+        }
+      ],
+      "minimoSelec": 1,
+      "maximoSelect": 3
+    }
+  ]
+}

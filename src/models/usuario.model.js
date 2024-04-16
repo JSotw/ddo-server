@@ -3,6 +3,10 @@ import Mongoose from "mongoose";
 
 const usuarioSchema = new Mongoose.Schema(
   {
+    nombre_usuario: {
+      type: String,
+      required: true,
+    },
     nombre: {
       type: String,
       required: true,
@@ -27,8 +31,8 @@ const usuarioSchema = new Mongoose.Schema(
       type: String,
     },
     rol: {
-      type: ObjectId,
-      ref: "Rol",
+      type: String,
+      // ref: "Rol",
       //require: true,
     }
   },

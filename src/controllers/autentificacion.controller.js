@@ -5,23 +5,24 @@ import jwt from "jsonwebtoken";
 import { TOKEN_SECRET } from "../../config.js";
 
 export const login = async (req, res) => {
-  const { contrasenia } = req.body;
+  const { nombre_usuario, contrasenia } = req.body;
 
   try {
-    const usuarioEncontrado = await usuarioModel.findOne({ contrasenia });
+    const usuarioEncontrado = await usuarioModel.findOne({ nombre_usuario });
     
     if (!usuarioEncontrado)
-      return res.status(400).json(["No se encuentra la contraseña"]);
+      return res.status(400).json(["No se encuentra el nombre de usuario"]);
 
-    // const siCoincide = await bcrypt.compare(
-    //   contrasenia,
-    //   usuarioEncontrado.contrasenia
-    // ); //contraseña encriptada
-    // if (!siCoincide) return res.status(400).json(["Contraseña incorrecta"]);
+    const siCoincide = await bcrypt.compare(
+      contrasenia,
+      usuarioEncontrado.contrasenia
+    ); //contraseña encriptada
+    if (!siCoincide) return res.status(400).json(["Contraseña incorrecta"]);
 
     const token = await crearTokenAcceso({ id: usuarioEncontrado._id });
     res.cookie("token", token);
     res.json({
+      nombre_usuario: usuarioEncontrado.nombre_usuario,
       nombre: usuarioEncontrado.nombre,
       apellido_p: usuarioEncontrado.apellido_p,
       apellido_m: usuarioEncontrado.apellido_m,
@@ -38,6 +39,7 @@ export const login = async (req, res) => {
 
 export const register = async (req, res) => {
   const {
+    nombre_usuario,
     nombre,
     apellido_p,
     apellido_m,
@@ -50,14 +52,16 @@ export const register = async (req, res) => {
   } = req.body;
 
   try {
-    // const contraseniaEncriptada = await bcrypt.hash(contrasenia, 10); //contraseña encriptada
+    const contraseniaEncriptada = await bcrypt.hash(contrasenia, 10); //contraseña encriptada
 
+    console.log(contraseniaEncriptada);
     const nuevoUsuario = new usuarioModel({
+      nombre_usuario,
       nombre,
       apellido_p,
       apellido_m,
       correo,
-      contrasenia,
+      contrasenia: contraseniaEncriptada,
       imagen_perfil,
       rol,
       createdAt,
@@ -67,6 +71,7 @@ export const register = async (req, res) => {
     // const token = await crearTokenAcceso({ id: usuarioGuardado._id });
     // res.cookie("token", token);
     const usuario = await res.json({
+      nombre_usuario: usuarioGuardado.nombre_usuario,
       nombre: usuarioGuardado.nombre,
       apellido_p: usuarioGuardado.apellido_p,
       apellido_m: usuarioGuardado.apellido_m,
@@ -77,7 +82,7 @@ export const register = async (req, res) => {
       createdAt: usuarioGuardado.createdAt,
       updatedAt: usuarioGuardado.updatedAt,
     });
-    console.log(usuario["body"]);
+    console.log(usuario);
   } catch (error) {
     console.log(error);
   }

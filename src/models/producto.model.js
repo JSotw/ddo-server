@@ -10,8 +10,8 @@ const productoSchema = new Mongoose.Schema(
       type: String,
       required: true,
     },
-    descripcion: {
-      type: String,
+    agregados: {
+      type: Object,
       required: true,
     },
     detalles: {
