@@ -10,20 +10,22 @@ const productoSchema = new Mongoose.Schema(
       type: String,
       required: true,
     },
+    codigo: {
+      type: String,
+      required: true,
+    },
+    descripcion: {
+      type: String,
+      required: true,
+    },
     agregados: {
       type: Object,
       required: true,
     },
-    detalles: {
-      type: Object,
-      required: true,
-    },
-    precio: {
+    precio_base: {
       type: Number,
       required: true,
     },
-
-
     cantidad_disponible: {
       type: Number,
       required: true,
