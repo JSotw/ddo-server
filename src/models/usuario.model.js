@@ -35,7 +35,7 @@ const usuarioSchema = new Mongoose.Schema(
     },
     rol: {
       type: String,
-      // ref: "Rol",
+      //ref: "Rol",
       //require: true,
     },
     activo: {
