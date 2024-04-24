@@ -6,8 +6,8 @@ const agregadoSchema = new Mongoose.Schema(
       type: String,
       required: true,
     },
-    ingredientes: {
-      type: Object,
+    precio: {
+      type: Number,
       required: true,
     },
     minimo_selec: {

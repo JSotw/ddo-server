@@ -43,7 +43,8 @@ export const login = async (req, res) => {
 export const register = async (req, res) => {
   const {
     nombre_usuario,
-    nombre,
+    primer_n,
+    segundo_n,
     apellido_p,
     apellido_m,
     correo,
@@ -52,6 +53,7 @@ export const register = async (req, res) => {
     rol,
     createdAt,
     updatedAt,
+    activo,
   } = req.body;
 
   try {
@@ -62,7 +64,8 @@ export const register = async (req, res) => {
       console.log(contraseniaEncriptada);
       const nuevoUsuario = new usuarioModel({
         nombre_usuario,
-        nombre,
+        primer_n,
+        segundo_n,
         apellido_p,
         apellido_m,
         correo,
@@ -71,26 +74,13 @@ export const register = async (req, res) => {
         rol,
         createdAt,
         updatedAt,
+        activo
       });
       const usuarioGuardado = await nuevoUsuario.save();
-      // const token = await crearTokenAcceso({ id: usuarioGuardado._id });
-      // res.cookie("token", token);
-      const usuario = await res.json({
-        nombre_usuario: usuarioGuardado.nombre_usuario,
-        nombre: usuarioGuardado.nombre,
-        apellido_p: usuarioGuardado.apellido_p,
-        apellido_m: usuarioGuardado.apellido_m,
-        correo: usuarioGuardado.correo,
-        contrasenia: usuarioGuardado.contrasenia,
-        imagen_perfil: usuarioGuardado.imagen_perfil,
-        rol: usuarioGuardado.rol,
-        createdAt: usuarioGuardado.createdAt,
-        updatedAt: usuarioGuardado.updatedAt,
-      });
       return res.status(200).json({
         "resultado": "Exito",
         "mensaje": "Usuario registrado",
-        "datos": usuario
+        "datos": usuarioGuardado
       });
     }else{
       return res.status(401).json({

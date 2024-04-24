@@ -16,7 +16,7 @@ const productoSchema = new Mongoose.Schema(
       required: true,
     },
     agregados: {
-      type: Object,
+      type: Array,
       required: false,
     },
     precio_base: {
