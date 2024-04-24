@@ -1,11 +1,8 @@
+import { ObjectId } from "mongodb";
 import Mongoose from "mongoose";
 
 const productoSchema = new Mongoose.Schema(
   {
-    id: {
-      type: String,
-      required: true,
-    },
     nombre: {
       type: String,
       required: true,
@@ -20,7 +17,7 @@ const productoSchema = new Mongoose.Schema(
     },
     agregados: {
       type: Object,
-      required: true,
+      required: false,
     },
     precio_base: {
       type: Number,
@@ -32,7 +29,7 @@ const productoSchema = new Mongoose.Schema(
     }, 
     imagenes: {
       type: Array,
-      required: true,
+      required: false,
     },
   },
   {

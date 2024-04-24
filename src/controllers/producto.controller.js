@@ -1,6 +1,6 @@
 import productoModel from "../models/producto.model.js";
 
-export const register = async (req, res) => {
+export const registerProducto = async (req, res) => {
     const {
       nombre,
       codigo,
@@ -13,7 +13,7 @@ export const register = async (req, res) => {
   
     try {
       
-        const nuevoProducto = new usuarioModel({
+        const nuevoProducto = new productoModel({
             nombre,
             codigo,
             descripcion,
@@ -32,8 +32,15 @@ export const register = async (req, res) => {
             cantidad_disponible: productoGuardado.cantidad_disponible,
             imagenes: productoGuardado.imagenes,
         });
-        console.log(prod);
+        return res.status(200).json({
+          "resultado": "Exito",
+          "mensaje": "Producto registrado",
+          "datos": prod
+        });
     } catch (error) {
-      console.log(error);
+      return res.status(401).json({
+        "resultado": "Error",
+        "mensaje": error.message
+      });
     }
   };

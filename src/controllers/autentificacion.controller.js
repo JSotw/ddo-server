@@ -33,7 +33,10 @@ export const login = async (req, res) => {
       updatedAt: usuarioEncontrado.updatedAt,
     });
   } catch (error) {
-    console.log(error);
+    return res.status(400).json({
+      "resultado": "Error",
+      "mensaje": error.message
+    });
   }
 };
 
@@ -84,12 +87,22 @@ export const register = async (req, res) => {
         createdAt: usuarioGuardado.createdAt,
         updatedAt: usuarioGuardado.updatedAt,
       });
-      console.log(usuario);
+      return res.status(200).json({
+        "resultado": "Exito",
+        "mensaje": "Usuario registrado",
+        "datos": usuario
+      });
     }else{
-      return res.status(401).json(["Usuario ya existente"]);//Código podría cambiar
+      return res.status(401).json({
+        "resultado": "Error",
+        "mensaje": "Usuario ya registrado"
+      });
     }
   } catch (error) {
-    console.log(error);
+    return res.status(400).json({
+      "resultado": "Error",
+      "mensaje": error.message
+    });
   }
 };
 
