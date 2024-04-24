@@ -42,49 +42,6 @@ export const login = async (req, res) => {
   }
 };
 
-export const register = async (req, res) => {
-  const {
-    primer_n,
-    segundo_n,
-    apellido_p,
-    apellido_m,
-    correo,
-    nombre_usuario,
-    contrasenia,
-    imagen_perfil,
-    rol,
-    activo,
-  } = req.body;
-
-  try {
-    const usuarioEncontrado = await usuarioModel.findOne({ nombre_usuario });
-    if (!usuarioEncontrado) {
-      const contraseniaEncriptada = await bcrypt.hash(contrasenia, 10); //contraseña encriptada
-
-      console.log(contraseniaEncriptada);
-      const nuevoUsuario = new usuarioModel({
-        primer_n,
-        segundo_n,
-        apellido_p,
-        apellido_m,
-        correo,
-        nombre_usuario,
-        contrasenia: contraseniaEncriptada,
-        imagen_perfil,
-        rol,
-        activo,
-      });
-      const usuarioGuardado = await nuevoUsuario.save();
-      // const token = await crearTokenAcceso({ id: usuarioGuardado._id });
-      // res.cookie("token", token);
-      console.log(usuarioGuardado);
-    } else {
-      return res.status(401).json(["El nombre de usuario ya existe"]); //Código podría cambiar
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 export const logout = (req, res) => {
   res.cookie("token", "", {

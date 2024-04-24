@@ -1,19 +1,30 @@
 import { Router } from "express";
-import { authRequired } from "../middlewares/validarToken.js";
+import { authRequired } from "../middlewares/validarToken.js"; // Requiere sesión activa
+import { validarSchema } from "../middlewares/validador.middleware.js"; // Intermediario de validación
+
+import { crearUsuarioSchema } from "../schemas/usuarios.schema.js"; // Esquemas de validación
 
 import {
   obtenerUsuarios,
+  crearUsuario,
+  actualizarUsuario,
+  eliminarUsuario
 } from "../controllers/usuarios.controller.js";
 
-// import { createPropertySchema } from "../schemas/property.schema.js";
-// import { validateSchema } from "../middlewares/validator.middleware.js";
 
 const router = Router();
+
 
 //Mostrar usuarios
 router.get("/obtener-usuarios", obtenerUsuarios);
 
+// Registro de usuario nuevo
+router.post("/crear-usuario", authRequired, validarSchema(crearUsuarioSchema), crearUsuario);
 
+//Actualizar usuario
+router.get("/actualizar-usuario/:id", authRequired, validarSchema(crearUsuarioSchema), actualizarUsuario);
+//Eliminar usuario
+router.get("/eliminar-usuario/:id", authRequired, eliminarUsuario);
 
 
 

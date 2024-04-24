@@ -8,3 +8,4 @@ export const loginSchema = z.object({
     required_error: "Se requiere una contraseña",
   }),
 });
+
