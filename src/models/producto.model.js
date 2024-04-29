@@ -1,35 +1,39 @@
+import { ObjectId } from "mongodb";
 import Mongoose from "mongoose";
+import { boolean } from "zod";
 
 const productoSchema = new Mongoose.Schema(
   {
-    id: {
-      type: String,
-      required: true,
-    },
     nombre: {
       type: String,
       required: true,
     },
+    codigo: {
+      type: String,
+      required: true,
+    },
+    descripcion: {
+      type: String,
+      required: true,
+    },
     agregados: {
-      type: Object,
-      required: true,
+      type: Array,
+      required: false,
     },
-    detalles: {
-      type: Object,
-      required: true,
-    },
-    precio: {
+    precio_base: {
       type: Number,
       required: true,
     },
-
-
     cantidad_disponible: {
       type: Number,
-      required: true,
+      required: false,
     }, 
     imagenes: {
       type: Array,
+      required: false,
+    },
+    activo: {
+      type: Boolean,
       required: true,
     },
   },

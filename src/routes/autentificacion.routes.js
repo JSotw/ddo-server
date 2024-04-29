@@ -2,7 +2,6 @@ import { Router } from "express";
 import { authRequired } from "../middlewares/validarToken.js"; // Intermediario de seguridad, debe estar con la sesión iniciada
 import {
   login,
-  register,
   logout,
   verificarToken,
 } from "../controllers/autentificacion.controller.js"; // Controladores
