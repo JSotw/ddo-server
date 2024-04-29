@@ -7,6 +7,7 @@ import "dotenv/config.js";
 // Routes
 import autentificacionRoutes from "./src/routes/autentificacion.routes.js";
 import usuariosRoutes from "./src/routes/usuarios.routes.js";
+import productoRoutes from "./src/routes/productos.routes.js";
 
 
 const app = e();
@@ -23,6 +24,7 @@ app.use(cookieParser());
 // app api routes
 app.use('/api', autentificacionRoutes);
 app.use('/api', usuariosRoutes);
+app.use('/api', productoRoutes);
 
 
 export default app;
