@@ -4,6 +4,9 @@ import { crearTokenAcceso } from "../libs/jwt.js";
 import jwt from "jsonwebtoken";
 import { TOKEN_SECRET } from "../../config.js";
 
+import { Resend } from "resend";
+import "dotenv/config.js";
+
 export const login = async (req, res) => {
   const { nombre_usuario, contrasenia } = req.body;
 
@@ -42,6 +45,50 @@ export const login = async (req, res) => {
   }
 };
 
+export const recuperarDatos = async (req, res) => {
+  const { nombre_usuario } = req.body;
+
+  try {
+    const usuarioEncontrado = await usuarioModel.findOne({ nombre_usuario });
+    const newContrasenia = "123456";
+
+    if (!usuarioEncontrado)
+      return res.status(400).json(["No se encuentra el nombre de usuario"]);
+
+    if (!usuarioEncontrado.activo) {
+      return res.status(400).json(["Su usuario está inactivo"]);
+    } else {
+      //console.log(newContrasenia);
+      await usuarioModel.findOneAndUpdate(
+        { _id: usuarioEncontrado._id },
+        { contrasenia: newContrasenia },
+        {
+          new: true,
+        }
+      );
+      const resend = new Resend(process.env.RESEND_APIKEY);
+      resend.emails.send({
+        from: "onboarding@resend.dev",
+        to: "janoguerrasks@gmail.com",
+        subject: "DDO Usuario",
+        html: `<p>Hola ${usuarioEncontrado.primer_n} ${usuarioEncontrado.apellido_p}<br> 
+                <strong>Tu nombre de usuario: ${usuarioEncontrado.nombre_usuario}</strong><br>
+                <strong>Tu nueva contraseña: ${usuarioEncontrado.contrasenia}</strong>
+              </p>`,
+      });
+    }
+
+    res.json({
+      primer_n: usuarioEncontrado.primer_n,
+      apellido_p: usuarioEncontrado.apellido_p,
+      correo: usuarioEncontrado.correo,
+      nombre_usuario: usuarioEncontrado.nombre_usuario,
+      contrasenia: newContrasenia,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export const logout = (req, res) => {
   res.cookie("token", "", {

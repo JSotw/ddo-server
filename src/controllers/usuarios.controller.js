@@ -71,7 +71,7 @@ export const obtenerUsuario = async (req, res) => {
 export const actualizarUsuario = async (req, res) => {
   try {
     const usuario = await usuarioModel.findOneAndUpdate(
-      { id: req.params.id },
+      { _id: req.params.id },
       req.body,
       {
         new: true,

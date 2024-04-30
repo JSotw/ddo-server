@@ -9,3 +9,9 @@ export const loginSchema = z.object({
   }),
 });
 
+export const recuperarDatosSchema = z.object({
+  nombre_usuario: z.string({
+    required_error: "Se requiere un nombre de usuario existente",
+  }),
+});
+
