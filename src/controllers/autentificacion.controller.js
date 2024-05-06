@@ -52,6 +52,8 @@ export const recuperarDatos = async (req, res) => {
     const usuarioEncontrado = await usuarioModel.findOne({ nombre_usuario });
     const newContrasenia = "123456";
 
+    const newCryptContrasenia = await bcrypt.hash(newContrasenia, 10);
+
     if (!usuarioEncontrado)
       return res.status(400).json(["No se encuentra el nombre de usuario"]);
 
@@ -61,21 +63,28 @@ export const recuperarDatos = async (req, res) => {
       //console.log(newContrasenia);
       await usuarioModel.findOneAndUpdate(
         { _id: usuarioEncontrado._id },
-        { contrasenia: newContrasenia },
+        { contrasenia: newCryptContrasenia },
         {
           new: true,
         }
       );
       const resend = new Resend(process.env.RESEND_APIKEY);
-      resend.emails.send({
-        from: "onboarding@resend.dev",
-        to: `${usuarioEncontrado.correo}`,
-        subject: "DDO Usuario",
-        html: `<p>Hola ${usuarioEncontrado.primer_n} ${usuarioEncontrado.apellido_p}<br> 
-                <strong>Tu nombre de usuario: ${usuarioEncontrado.nombre_usuario}</strong><br>
-                <strong>Tu nueva contraseña: ${usuarioEncontrado.contrasenia}</strong>
-              </p>`,
-      });
+      (async function () {
+        const { data, error } = await resend.emails.send({
+          from: 'Acme <onboarding@resend.dev>',
+          to: [`janoguerrasks@gmail.com`],
+          subject: 'DDO Usuarios',
+          html: `<p>Hola ${usuarioEncontrado.primer_n} ${usuarioEncontrado.apellido_p}<br> 
+          <strong>Tu nombre de usuario: ${usuarioEncontrado.nombre_usuario}</strong><br>
+          <strong>Tu nueva contraseña: ${usuarioEncontrado.contrasenia}</strong>
+        </p>`,
+        });
+      
+        if (error) {
+          return console.error({ error });
+        }
+        console.log({ data });
+      })();
     }
 
     res.json({
