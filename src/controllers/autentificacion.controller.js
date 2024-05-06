@@ -76,7 +76,7 @@ export const recuperarDatos = async (req, res) => {
           subject: 'DDO Usuarios',
           html: `<p>Hola ${usuarioEncontrado.primer_n} ${usuarioEncontrado.apellido_p}<br> 
           <strong>Tu nombre de usuario: ${usuarioEncontrado.nombre_usuario}</strong><br>
-          <strong>Tu nueva contraseña: ${usuarioEncontrado.contrasenia}</strong>
+          <strong>Tu nueva contraseña: ${newContrasenia}</strong>
         </p>`,
         });
       

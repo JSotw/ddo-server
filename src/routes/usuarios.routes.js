@@ -22,9 +22,10 @@ router.get("/obtener-usuarios", obtenerUsuarios);
 router.post("/crear-usuario", authRequired, validarSchema(crearUsuarioSchema), crearUsuario);
 
 //Actualizar usuario
-router.get("/actualizar-usuario/:id", authRequired, validarSchema(crearUsuarioSchema), actualizarUsuario);
+router.get("/actualizar-usuario/:id", authRequired, actualizarUsuario);
+router.put("/actualizar-usuario/:id", authRequired, validarSchema(crearUsuarioSchema), actualizarUsuario);
 //Eliminar usuario
-router.get("/eliminar-usuario/:id", authRequired, eliminarUsuario);
+router.delete("/eliminar-usuario/:id", authRequired, eliminarUsuario);
 
 
 
