@@ -34,7 +34,8 @@ const productoSchema = new Mongoose.Schema(
     },
     activo: {
       type: Boolean,
-      required: true,
+      required: false,
+      default: true
     },
   },
   {
