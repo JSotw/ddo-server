@@ -6,9 +6,11 @@ import { crearProductoSchema } from "../schemas/productos.schema.js"; // Esquema
 
 import {
   obtenerProductos,
-  //crearProducto,
-  //actualizarProducto,
-  //eliminarProducto
+  obtenerProducto,
+  obtenerProductoPorCodigo,
+  crearProducto,
+  actualizarProducto,
+  eliminarProducto
 } from "../controllers/productos.controller.js";
 
 
@@ -17,13 +19,15 @@ const router = Router();
 
 //Mostrar productos
 router.get("/obtener-productos", obtenerProductos);
+router.get("/obtener-producto", obtenerProducto);
+router.get("/obtener-prod-por-codigo", obtenerProductoPorCodigo);
 
 // Registro de producto nuevo
-//router.post("/crear-producto", authRequired, validarSchema(crearProductoSchema), crearProducto);
+router.post("/crear-producto", authRequired, validarSchema(crearProductoSchema), crearProducto);
 
 //Actualizar producto
-//router.get("/actualizar-producto/:id", authRequired, validarSchema(crearProductoschema), actualizarProducto);
+router.get("/actualizar-producto/:id", authRequired, validarSchema(crearProductoSchema), actualizarProducto);
 //Eliminar producto
-//router.get("/eliminar-producto/:id", authRequired, eliminarProducto);
+router.get("/eliminar-producto/:id", authRequired, eliminarProducto);
 
 export default router;
