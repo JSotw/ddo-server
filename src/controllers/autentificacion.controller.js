@@ -69,7 +69,7 @@ export const recuperarDatos = async (req, res) => {
       const resend = new Resend(process.env.RESEND_APIKEY);
       resend.emails.send({
         from: "onboarding@resend.dev",
-        to: "janoguerrasks@gmail.com",
+        to: `${usuarioEncontrado.correo}`,
         subject: "DDO Usuario",
         html: `<p>Hola ${usuarioEncontrado.primer_n} ${usuarioEncontrado.apellido_p}<br> 
                 <strong>Tu nombre de usuario: ${usuarioEncontrado.nombre_usuario}</strong><br>
