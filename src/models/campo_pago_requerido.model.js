@@ -12,7 +12,7 @@ const campo_pago_extraSchema = new Mongoose.Schema(
         },
         valor:{
             type: Object,   //Puede ser un string o un number
-            required: true,
+            required: false,
         },
     },
     {

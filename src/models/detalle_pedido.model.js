@@ -6,6 +6,10 @@ const detalle_pedidoSchema = new Mongoose.Schema(
       type: Object,
       required: true,
     },
+    ingredientes: {
+      type: Array,
+      required: true,
+    },
     precio: {
       type: Number,
       required: true,

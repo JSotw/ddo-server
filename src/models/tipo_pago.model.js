@@ -11,7 +11,7 @@ const tipo_pagoSchema = new Mongoose.Schema(
         //el pago con transferencia requiere el número de transferencia dado por la
         //aplicación del banco estado
         camposExtra: {
-            type: Object,
+            type: Array,
             required: true,
         },
     },

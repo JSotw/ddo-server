@@ -3,7 +3,7 @@ import Mongoose, { Types } from "mongoose";
 const pagoSchema = new Mongoose.Schema(
     {
         monto: {
-            type: String,
+            type: Number,
             required: true,
         },
         tipo_pago: {
