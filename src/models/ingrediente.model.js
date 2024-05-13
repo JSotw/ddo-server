@@ -2,15 +2,15 @@ import Mongoose from "mongoose";
 
 const ingredienteSchema = new Mongoose.Schema(
   {
-    nombre: {
-      type: String,
+    agregado: {
+      type: Object,
       required: true,
     },
-    precio: {
+    monto: {
       type: Number,
       required: true,
     },
-    cant_maxima:{
+    cantidad:{
         type: Number,
         required: true,
     }
