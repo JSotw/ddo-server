@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import Mongoose from "mongoose";
 
 const usuarioSchema = new Mongoose.Schema(

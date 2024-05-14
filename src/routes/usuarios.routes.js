@@ -16,14 +16,14 @@ const router = Router();
 
 
 //Mostrar usuarios
-router.get("/obtener-usuarios", obtenerUsuarios);
+router.get("/obtener-usuarios", authRequired, obtenerUsuarios);
 
 // Registro de usuario nuevo
 router.post("/crear-usuario", authRequired, validarSchema(crearUsuarioSchema), crearUsuario);
 
 //Actualizar usuario
 router.get("/actualizar-usuario/:id", authRequired, actualizarUsuario);
-router.put("/actualizar-usuario/:id", authRequired, validarSchema(crearUsuarioSchema), actualizarUsuario);
+router.put("/actualizar-usuario/:id", authRequired, actualizarUsuario);
 //Eliminar usuario
 router.delete("/eliminar-usuario/:id", authRequired, eliminarUsuario);
 
