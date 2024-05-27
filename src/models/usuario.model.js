@@ -20,9 +20,17 @@ const usuarioSchema = new Mongoose.Schema(
     correo: {
       type: String,
       required: true,
+      unique: true,
+      validate: {
+        validator: function (v) {
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+        },
+        message: (props) => `${props.value} no es un correo válido`,
+      },
     },
     nombre_usuario: {
       type: String,
+      unique: true,
       required: true,
     },
     contrasenia: {
@@ -40,7 +48,7 @@ const usuarioSchema = new Mongoose.Schema(
     activo: {
       type: Boolean,
       required: true,
-    }
+    },
   },
   {
     timestamps: true,
