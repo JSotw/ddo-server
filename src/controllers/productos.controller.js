@@ -84,7 +84,7 @@ export const crearProducto = async (req, res) => {
   };
   export const obtenerProducto = async (req, res) => {
     try {
-      const producto = await productoModel.findOne({ _id: req.body.id });
+      const producto = await productoModel.findOne({ _id: req.params.id });
       if (!producto)
         return res.status(404).json({ message: "No se encuentra el producto" });
       res.json(producto);
