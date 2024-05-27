@@ -251,8 +251,8 @@ export const crearPedido = async (req, res) => {
         "mensaje": error.message
       });
     }
-  };
-  export const actualizarPedido = async (req, res) => {
+};
+export const actualizarPedido = async (req, res) => {
      const _id = req.params.id;
      console.log(_id);
       const {
@@ -516,8 +516,8 @@ export const crearPedido = async (req, res) => {
         "mensaje": `Pedido no encontrado${error.message}`
         });
        });
-    };
-    export const actualizarDetallePedido = async (req, res) => {
+};
+export const actualizarDetallePedido = async (req, res) => {
         const _id = req.params.id;
         const {
             detalles
@@ -647,4 +647,38 @@ export const crearPedido = async (req, res) => {
             "mensaje": `Pedido no encontrado ${error.message}`
             });
         });
-    };
+};
+export const reporteVentasDiario = async(req, res) => {
+    try{
+        const _desde = new Date(req.params.desde);
+        const _hasta = new Date(req.params.hasta);
+
+        const _pedidos = await pedidoModel.find({createdAt: { $gte: _desde, $lte: _hasta} });
+        console.log(_pedidos);
+        let total = 0;
+        let gastos = 0;
+        let clientes = [];
+        let ordenes = 0;
+        for(const p of _pedidos){
+            total += p.monto_total;
+            if(!clientes.includes(p.nombre_retiro)){
+                clientes.push(p.nombre_retiro);
+            }
+            ordenes++;
+        }
+        return res.status(202).json({
+            "resultado": "Exito",
+            "data": {
+                "total": total,
+                "gastos": gastos,
+                "clientes": clientes.length,
+                "ordenes": ordenes
+            }
+        });
+    }catch(err){
+        return res.status(400).json({
+            "resultado": "Error",
+            "mensaje": `${err.message}`
+        });
+    }
+}

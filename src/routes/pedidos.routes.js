@@ -5,7 +5,8 @@ import { authRequired } from "../middlewares/validarToken.js"; // Requiere sesi√
 import {
     crearPedido,
     actualizarPedido,
-    actualizarDetallePedido
+    actualizarDetallePedido,
+    reporteVentasDiario
   } from "../controllers/pedidos.controller.js";
   
 const router = Router();
@@ -15,5 +16,7 @@ router.post("/crear-pedido", authRequired, crearPedido);
 
 router.get("/actualizar-pedido/:id", authRequired, actualizarPedido);
 router.get("/actualizar-pedido-detalles/:id", authRequired, actualizarDetallePedido);
+
+router.get("/reporte-diario/:desde/:hasta", authRequired, reporteVentasDiario)
 
 export default router;
