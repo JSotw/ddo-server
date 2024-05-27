@@ -19,7 +19,7 @@ const router = Router();
 
 //Mostrar productos
 router.get("/obtener-productos", obtenerProductos);
-router.get("/obtener-producto", obtenerProducto);
+router.get("/obtener-producto/:id", obtenerProducto);
 router.get("/obtener-prod-por-codigo", obtenerProductoPorCodigo);
 
 // Registro de producto nuevo
