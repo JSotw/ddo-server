@@ -11,6 +11,8 @@ import productoRoutes from "./src/routes/productos.routes.js";
 import pedidoRoutes from "./src/routes/pedidos.routes.js";
 import tipoPagoRoutes from "./src/routes/tipoPago.routes.js";
 import estadosRoutes from "./src/routes/estados.routes.js";
+import agregadosRoutes from "./src/routes/agregados.routes.js";
+import gastosRoutes from "./src/routes/gastos.routes.js";
 
 
 const app = e();
@@ -31,6 +33,8 @@ app.use('/api', productoRoutes);
 app.use('/api', pedidoRoutes);
 app.use('/api', tipoPagoRoutes);
 app.use('/api', estadosRoutes);
+app.use('/api/agregados', agregadosRoutes);
+app.use('/api/gastos', gastosRoutes);
 
 
 export default app;
