@@ -1,4 +1,4 @@
-import { z } from "zod" // Validar los datos
+import { z } from "zod"; // Validar los datos
 
 export const crearUsuarioSchema = z.object({
   primer_n: z.string({
@@ -10,8 +10,8 @@ export const crearUsuarioSchema = z.object({
   apellido_m: z.string({
     required_error: "Apellido materno requerido",
   }),
-  correo: z.string({
-    required_error: "Correo requerido",
+  correo: z.string().email({ 
+    message: "Correo ingresado inválido",
   }),
   nombre_usuario: z.string({
     required_error: "Nombre de usuario requerido",

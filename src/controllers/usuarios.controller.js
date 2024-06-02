@@ -1,4 +1,5 @@
 import usuarioModel from "../models/usuario.model.js";
+import bcrypt from "bcryptjs";
 
 //MODULO DE USUARIOS
 //Lista de usuarios
@@ -51,7 +52,7 @@ export const crearUsuario = async (req, res) => {
       // res.cookie("token", token);
       console.log(usuarioGuardado);
     } else {
-      return res.status(401).json(["El nombre de usuario ya existe"]); //
+      return res.status(401).json({message : "El nombre de usuario ya existe"}); //
     }
   } catch (error) {
     console.log(error);
