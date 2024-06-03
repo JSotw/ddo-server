@@ -3,12 +3,17 @@ import agregadoModel from "../models/agregado.model.js";
 
 export const obtenerProductos = async (req, res) => {
     try {
-      const productos = await productoModel.find();
+      let productos;
+      if(req.params.estado != undefined){
+        productos = await productoModel.find({activo: req.params.estado});
+      }else{
+        productos = await productoModel.find();
+      }
       res.json(productos);
     } catch (error) {
       return res
         .status(500)
-        .json({ message: "Productos no disponibles o existentes" });
+        .json({ message: "Productos no disponibles o existentes", error: error.message });
     }
   };
   

@@ -5,7 +5,9 @@ import { authRequired } from "../middlewares/validarToken.js"; // Requiere sesi√
 import {
     crearPedido,
     actualizarPedido,
-    actualizarDetallePedido
+    actualizarDetallePedido,
+    reporteVentasDiario,
+    reporteVentasXDia
   } from "../controllers/pedidos.controller.js";
   
 const router = Router();
@@ -13,7 +15,10 @@ const router = Router();
 // Registro de pedido nuevo
 router.post("/crear-pedido", authRequired, crearPedido);
 
-router.get("/actualizar-pedido/:id", authRequired, actualizarPedido);
-router.get("/actualizar-pedido-detalles/:id", authRequired, actualizarDetallePedido);
+router.post("/actualizar-pedido/:id", authRequired, actualizarPedido);
+router.post("/actualizar-pedido-detalles/:id", authRequired, actualizarDetallePedido);
+
+router.get("/reporte-diario/:desde/:hasta", authRequired, reporteVentasDiario)
+router.get("/reporte-por-dia/", authRequired, reporteVentasXDia)
 
 export default router;
