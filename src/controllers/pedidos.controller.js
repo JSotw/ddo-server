@@ -8,6 +8,7 @@ import campoExtraModel from "../models/campo_pago_requerido.model.js";
 import ingredienteModel from "../models/ingrediente.model.js";
 import agregadoModel from "../models/agregado.model.js";
 import gastoModel from "../models/gasto.model.js";
+import { Int32 } from "mongodb";
 
 
 export const crearPedido = async (req, res) => {
@@ -28,82 +29,87 @@ export const crearPedido = async (req, res) => {
         if(detalles != undefined){
           if(detalles.length > 0){
             for(const det of detalles) {
-                let _montoDetalle = 0;
-                const producto = await productoModel.findOne({ _id: det.producto._id });
-                if(producto){
-                    if(producto.activo){
-                        const _ingredientesValidados = [];
-                        let _montoAgregados = 0;
-                        if(det.producto.agregados != undefined && det.producto.agregados != null){
-                            for(const ag of det.producto.agregados){
-                                if(ag.cantidad >= ag.minimo_selec && ag.cantidad <= ag.maximo_select){
-                                    if(ag.precio != undefined){
-                                        const _montoAgregado = ag.cantidad * ag.precio;
-                                        const agregadoValidado = new agregadoModel({
-                                            nombre: ag.nombre,
-                                            precio: ag.precio,
-                                            minimo_selec: ag.minimo_selec,
-                                            maximo_select: ag.maximo_select
-                                        });
-                                        let val = agregadoValidado.validateSync();
-                                        if(val){
+                let _cantidad = 0;
+                if(det.cantidad != undefined && det.cantidad != null){
+                    _cantidad = det.cantidad;
+                }
+                if(_cantidad > 0){
+                    let _montoDetalle = 0;
+                    const producto = await productoModel.findOne({ _id: det.producto_id });
+                    if(producto){
+                        if(producto.activo){
+                            const _ingredientesValidados = [];
+                            let _montoAgregados = 0;
+                            if(det.agregados != undefined && det.agregados != null){
+                                for(const ag of det.agregados){
+                                    const agregado = producto.agregados.find((a) => a.nombre === ag.nombre);
+                                    if(agregado){
+                                        if(ag.cantidad >= agregado.minimo_selec && ag.cantidad <= agregado.maximo_select){
+                                            if(agregado.precio != undefined){
+                                                const _montoAgregado = ag.cantidad * agregado.precio;
+                                                _ingredientesValidados.push(
+                                                    new ingredienteModel({
+                                                        agregado: agregado,
+                                                        monto: _montoAgregado,
+                                                        cantidad: ag.cantidad
+                                                    })
+                                                );
+                                                _montoAgregados += _montoAgregado;
+                                            }else{
+                                                error = true;
+                                                errorMessage = `Precio del agregado ${ag.nombre} no definido`;
+                                                break;
+                                            }
+                                        }else{
                                             error = true;
-                                            errorMessage = val.message;
+                                            errorMessage = `${agregado.nombre} fuera de los límites (${agregado.minimo_selec}-${agregado.maximo_select})`;
                                             break;
                                         }
-                                        _ingredientesValidados.push(
-                                            new ingredienteModel({
-                                                agregado: agregadoValidado,
-                                                monto: _montoAgregado,
-                                                cantidad: ag.cantidad
-                                            })
-                                        );
-                                        _montoAgregados += _montoAgregado;
                                     }else{
                                         error = true;
-                                        errorMessage = `Precio del agregado ${ag.nombre} no definido`;
+                                        errorMessage = `${ag.nombre} no está disponible para este producto`;
                                         break;
                                     }
-                                }else{
-                                    error = true;
-                                    errorMessage = `${ag.nombre} fuera de los límites`;
+                                }
+                                if(error){
                                     break;
                                 }
                             }
-                            if(error){
+                            _montoDetalle = (producto.precio_base + _montoAgregados) * det.cantidad;
+                            _montoTotal += _montoDetalle;
+                            let nuevoDetalle = new detallePedidoModel({
+                                producto: producto,
+                                ingredientes: _ingredientesValidados,
+                                precio: producto.precio_base,
+                                cantidad: det.cantidad,
+                                monto_total: _montoDetalle
+                            });
+                            try{
+                            let val = nuevoDetalle.validateSync();
+                            if(val){
+                                error = true;
+                                errorMessage = val.message;
                                 break;
                             }
-                        }
-                        _montoDetalle = (det.precio + _montoAgregados) * det.cantidad;
-                        _montoTotal += _montoDetalle;
-                        let nuevoDetalle = new detallePedidoModel({
-                            producto: producto,
-                            ingredientes: _ingredientesValidados,
-                            precio: det.precio,
-                            cantidad: det.cantidad,
-                            monto_total: _montoDetalle
-                        });
-                        try{
-                        let val = nuevoDetalle.validateSync();
-                        if(val){
+                            _detallesValidados.push(nuevoDetalle);
+                            }catch(err){
+                                error = true;
+                                errorMessage = err.message;
+                                break;
+                            }
+                        }else{
                             error = true;
-                            errorMessage = val.message;
-                            break;
-                        }
-                        _detallesValidados.push(nuevoDetalle);
-                        }catch(err){
-                            error = true;
-                            errorMessage = err.message;
+                            errorMessage = "Producto "+producto.nombre+" inactivo";
                             break;
                         }
                     }else{
                         error = true;
-                        errorMessage = "Producto "+producto.nombre+" inactivo";
+                        errorMessage = "Producto "+det.producto_id+" no encontrado";
                         break;
                     }
                 }else{
                     error = true;
-                    errorMessage = "Producto "+det.producto._id+" no encontrado";
+                    errorMessage = "Producto "+det.producto_id+" sin cantidad";
                     break;
                 }
             }
@@ -209,7 +215,7 @@ export const crearPedido = async (req, res) => {
             }
         }
         if(estado != undefined){
-            const estadoPedido = await estadoModel.findOne({nombre: estado.nombre});
+            const estadoPedido = await estadoModel.findOne({nombre: estado});
             if(estadoPedido){
                 const nuevoPedido = new pedidoModel({
                     id_usuario,
@@ -637,12 +643,22 @@ export const reporteVentasDiario = async(req, res) => {
         const _desde = new Date(req.params.desde);
         const _hasta = new Date(req.params.hasta);
 
+        const _difDesdeHasta = _hasta - _desde;
+        const _desdeComparativa = _desde - _difDesdeHasta;
+
         const _pedidos = await pedidoModel.find({createdAt: { $gte: _desde, $lte: _hasta} });
+        const _pedidosAnteriores = await pedidoModel.find({createdAt: { $gte: _desdeComparativa, $lte: _desde} });
         const _gastos = await gastoModel.find({fecha: { $gte: _desde, $lte: _hasta} });
+        const _gastosAnteriores = await gastoModel.find({fecha: { $gte: _desdeComparativa, $lte: _desde} });
         let total = 0;
+        let totalAnterior = 0;
         let gastos = 0;
+        let gastosAnteriores = 0;
         let clientes = [];
+        let clientesAnteriores = [];
         let ordenes = 0;
+        let ordenesAnteriores = 0;
+
         for(const p of _pedidos){
             total += p.monto_total;
             if(!clientes.includes(p.nombre_retiro)){
@@ -650,59 +666,94 @@ export const reporteVentasDiario = async(req, res) => {
             }
             ordenes++;
         }
+        
+        for(const p of _pedidosAnteriores){
+            totalAnterior += p.monto_total;
+            if(!clientesAnteriores.includes(p.nombre_retiro)){
+                clientesAnteriores.push(p.nombre_retiro);
+            }
+            ordenesAnteriores++;
+        }
+
         for(const g of _gastos){
             gastos += g.costo;
         }
+        for(const g of _gastosAnteriores){
+            gastosAnteriores += g.costo;
+        }
         return res.status(202).json({
-            "resultado": "Exito",
-            "data": {
-                "total": total,
-                "gastos": gastos,
-                "clientes": clientes.length,
-                "ordenes": ordenes
-            }
+            "total": total,
+            "totalAnterior": totalAnterior,
+            "gastos": gastos,
+            "gastosAnteriores": gastosAnteriores,
+            "clientes": clientes.length,
+            "clientesAnteriores": clientesAnteriores.length,
+            "ordenes": ordenes,
+            "ordenesAnteriores": ordenesAnteriores
         });
     }catch(err){
         return res.status(400).json({
-            "resultado": "Error",
             "mensaje": `${err.message}`
         });
     }
 }
 export const reporteVentasXDia = async(req, res) => {
     try{
-        const _desde = new Date(req.query.desde);
-        const _hasta = new Date(req.query.hasta);
+        const _desde = new Date(req.params.desde);
+        const _hasta = new Date(req.params.hasta);
         const _agrupacion = req.query.groupBy;
+        const _fillEmpty = new Boolean(req.query.fillEmpty);
 
         const _pedidos = await pedidoModel.find({createdAt: { $gte: _desde, $lte: _hasta} });
         let options = {  year: "numeric", month: "long", day: "numeric"}; //weekday: "long", 
-          if(_agrupacion == "año")
+        let _plusDays = 1;
+          if(_agrupacion == "año"){
             options = {  year: "numeric"};
-        else if(_agrupacion == "mes")
+            _plusDays = 365;
+          }
+        else if(_agrupacion == "mes"){
             options = {  year: "numeric", month: "long"};
-        else
+            _plusDays = 28;
+        }
+        else{
             options = {  year: "numeric", month: "numeric", day: "numeric"};
+            _plusDays = 1;
+        }
         
         var format = new Intl.DateTimeFormat("es-ES", options).format;
-        let registros = {};
-        for(const p of _pedidos){
-            let _fecha = format(p.createdAt);
-            
-            if(registros[_fecha] == undefined){
-                registros[_fecha] = 0;
+        let registros = new Array();
+        
+        if(_fillEmpty == true){
+            let _fechaActual = new Date(_desde);
+            while(_fechaActual <= _hasta){
+                const _fecha = format(_fechaActual);
+                let existe = registros.findIndex(r => r.fecha === _fecha);
+                if(existe == -1){
+                    registros.push({
+                        fecha: _fecha,
+                        monto: 0
+                    });
+                }
+                _fechaActual.setDate(_fechaActual.getDate() + _plusDays);
             }
-            registros[_fecha] += p.monto_total;
+        }
+        for(const p of _pedidos){
+            const _fecha = format(p.createdAt);
+            let existe = registros.findIndex(r => r.fecha === _fecha);
+            if(!existe){
+                registros.push({
+                    fecha: _fecha,
+                    monto: p.monto_total
+                });
+            }else{
+                registros[existe].monto += p.monto_total;
+            }
         }
         return res.status(202).json({
-            "resultado": "Exito",
-            "data": {
-                "registros": registros
-            }
+            "registros": registros
         });
     }catch(err){
         return res.status(400).json({
-            "resultado": "Error",
             "mensaje": `${err.message}`
         });
     }

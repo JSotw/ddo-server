@@ -21,14 +21,14 @@ const router = Router();
 router.get("/obtener-productos", obtenerProductos);
 router.get("/obtener-productos/:estado", obtenerProductos);
 router.get("/obtener-producto/:id", obtenerProducto);
-router.get("/obtener-prod-por-codigo", obtenerProductoPorCodigo);
+router.get("/obtener-prod-por-codigo/:codigo", obtenerProductoPorCodigo);
 
 // Registro de producto nuevo
 router.post("/crear-producto", authRequired, validarSchema(crearProductoSchema), crearProducto);
 
 //Actualizar producto
-router.get("/actualizar-producto/:id", authRequired, validarSchema(crearProductoSchema), actualizarProducto);
+router.put("/actualizar-producto/:id", authRequired, validarSchema(crearProductoSchema), actualizarProducto);
 //Eliminar producto
-router.get("/eliminar-producto/:id", authRequired, eliminarProducto);
+router.delete("/eliminar-producto/:id", authRequired, eliminarProducto);
 
 export default router;

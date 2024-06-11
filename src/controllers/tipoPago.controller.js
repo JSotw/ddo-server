@@ -28,11 +28,11 @@ export const crearPagosIniciales = async (req, res) => {
             camposExtra: [campoNumTransferencia]
         });
         const pagoElecGuardado = await pagoElec.save();
-        pagosRegistrados.push(pagoElecGuardado);
+        pagosRegistrados.push(pagoElec);
       }else{
         pagosRegistrados.push(pagoElectronicoEncontrado);
       }
-      return res.status(401).json({
+      return res.status(200).json({
         "resultado": "Exito",
         "mensaje": "Datos registrados",
         "data": pagosRegistrados
