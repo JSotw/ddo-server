@@ -23,12 +23,12 @@ export const crearEstadosIniciales = async (req, res) => {
                 pedido_abierto: estado.pedidoAbierto
             });
             let estadoRegistrado = await registro.save();
-            estadosRegistrados.push(estadoRegistrado);
+            estadosRegistrados.push(registro);
         }else{
             estadosRegistrados.push(estadoEncontrado);
         }
       });
-      return res.status(401).json({
+      return res.status(200).json({
         "resultado": "Exito",
         "mensaje": "Datos registrados",
         "data": estadosRegistrados

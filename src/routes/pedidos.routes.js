@@ -19,6 +19,6 @@ router.post("/actualizar-pedido/:id", authRequired, actualizarPedido);
 router.post("/actualizar-pedido-detalles/:id", authRequired, actualizarDetallePedido);
 
 router.get("/reporte-diario/:desde/:hasta", authRequired, reporteVentasDiario)
-router.get("/reporte-por-dia/", authRequired, reporteVentasXDia)
+router.get("/reporte-por-dia/:desde/:hasta", authRequired, reporteVentasXDia)
 
 export default router;
