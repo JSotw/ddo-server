@@ -4,6 +4,7 @@ import { validarSchema } from "../middlewares/validador.middleware.js"; // Inter
 
 import { crearUsuarioSchema } from "../schemas/usuarios.schema.js"; // Esquemas de validación
 
+// Importar las funciones de las funciones
 import {
   obtenerUsuarios,
   crearUsuario,
@@ -22,7 +23,7 @@ router.get("/obtener-usuarios", authRequired, obtenerUsuarios);
 router.post("/crear-usuario", authRequired, validarSchema(crearUsuarioSchema), crearUsuario);
 
 //Actualizar usuario
-router.get("/actualizar-usuario/:id", authRequired, actualizarUsuario);
+router.get("/obtener-usuario/:id", authRequired, actualizarUsuario);
 router.put("/actualizar-usuario/:id", authRequired, actualizarUsuario);
 //Eliminar usuario
 router.delete("/eliminar-usuario/:id", authRequired, eliminarUsuario);

@@ -52,7 +52,9 @@ export const crearUsuario = async (req, res) => {
       // res.cookie("token", token);
       console.log(usuarioGuardado);
     } else {
-      return res.status(401).json({message : "El nombre de usuario ya existe"}); //
+      return res
+        .status(401)
+        .json({ message: "El nombre de usuario ya existe" }); //
     }
   } catch (error) {
     console.log(error);
@@ -61,7 +63,9 @@ export const crearUsuario = async (req, res) => {
 
 export const obtenerUsuario = async (req, res) => {
   try {
-    const usuario = await usuarioModel.findOne({ id: req.params.id });
+    const usuario = await usuarioModel
+      .findById(req.params.id)
+      .populate("nombre_usuario");
     if (!usuario)
       return res.status(404).json({ message: "No se encuentra el usuario" });
     res.json(usuario);
@@ -71,13 +75,12 @@ export const obtenerUsuario = async (req, res) => {
 };
 export const actualizarUsuario = async (req, res) => {
   try {
-    const usuario = await usuarioModel.findOneAndUpdate(
-      { _id: req.params.id },
+    const usuario = await usuarioModel.findByIdAndUpdate(
+      req.params.id,
       req.body,
-      {
-        new: true,
-      }
+      { new: true }
     );
+
     if (!usuario)
       return res.status(404).json({ message: "No se encuentra el usuario" });
     res.json(usuario);
