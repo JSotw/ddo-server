@@ -63,9 +63,7 @@ export const crearUsuario = async (req, res) => {
 
 export const obtenerUsuario = async (req, res) => {
   try {
-    const usuario = await usuarioModel
-      .findById(req.params.id)
-      .populate("nombre_usuario");
+    const usuario = await usuarioModel.findById(req.params.id).populate("_id");
     if (!usuario)
       return res.status(404).json({ message: "No se encuentra el usuario" });
     res.json(usuario);
@@ -77,10 +75,9 @@ export const actualizarUsuario = async (req, res) => {
   try {
     const usuario = await usuarioModel.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      re.body,
       { new: true }
     );
-
     if (!usuario)
       return res.status(404).json({ message: "No se encuentra el usuario" });
     res.json(usuario);
