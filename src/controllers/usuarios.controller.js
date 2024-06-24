@@ -75,7 +75,7 @@ export const actualizarUsuario = async (req, res) => {
   try {
     const usuario = await usuarioModel.findByIdAndUpdate(
       req.params.id,
-      re.body,
+      req.body,
       { new: true }
     );
     if (!usuario)
