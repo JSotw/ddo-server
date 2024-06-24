@@ -9,7 +9,8 @@ import {
     actualizarPedido,
     actualizarDetallePedido,
     reporteVentasDiario,
-    reporteVentasXDia
+    reporteVentasXDia,
+    obtenerAllPedidos
   } from "../controllers/pedidos.controller.js";
   
 const router = Router();
@@ -21,6 +22,7 @@ router.post("/actualizar-pedido/:id", authRequired, actualizarPedido);
 router.post("/actualizar-pedido-detalles/:id", authRequired, actualizarDetallePedido);
 
 router.get("/obtener-pedido/:id", authRequired, obtenerPedido);
+router.get("/obtener-todos-pedidos", authRequired, obtenerAllPedidos);
 router.get("/obtener-pedidos/:desde/:hasta", authRequired, obtenerPedidos);
 router.get("/reporte-diario/:desde/:hasta", authRequired, reporteVentasDiario)
 router.get("/reporte-por-dia/:desde/:hasta", authRequired, reporteVentasXDia)
