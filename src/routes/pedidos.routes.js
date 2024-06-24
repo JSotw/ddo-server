@@ -3,6 +3,8 @@ import { authRequired } from "../middlewares/validarToken.js"; // Requiere sesi√
 
 
 import {
+    obtenerPedido,
+    obtenerPedidos,
     crearPedido,
     actualizarPedido,
     actualizarDetallePedido,
@@ -18,6 +20,8 @@ router.post("/crear-pedido", authRequired, crearPedido);
 router.post("/actualizar-pedido/:id", authRequired, actualizarPedido);
 router.post("/actualizar-pedido-detalles/:id", authRequired, actualizarDetallePedido);
 
+router.get("/obtener-pedido/:id", authRequired, obtenerPedido);
+router.get("/obtener-pedidos/:desde/:hasta", authRequired, obtenerPedidos);
 router.get("/reporte-diario/:desde/:hasta", authRequired, reporteVentasDiario)
 router.get("/reporte-por-dia/:desde/:hasta", authRequired, reporteVentasXDia)
 

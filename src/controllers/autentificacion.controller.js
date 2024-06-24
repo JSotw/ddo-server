@@ -28,6 +28,7 @@ export const login = async (req, res) => {
     const token = await crearTokenAcceso({ id: usuarioEncontrado._id });
     res.cookie("token", token);
     res.json({
+      id: usuarioEncontrado._id,
       primer_n: usuarioEncontrado.primer_n,
       segundo_n: usuarioEncontrado.segundo_n,
       apellido_p: usuarioEncontrado.apellido_p,
@@ -118,6 +119,7 @@ export const verificarToken = async (req, res) => {
       return res.status(401).json({ message: "Usuario no encontrado" });
 
     return res.json({
+      id: usuarioEncontrado._id,
       primer_n: usuarioEncontrado.primer_n,
       segundo_n: usuarioEncontrado.segundo_n,
       apellido_p: usuarioEncontrado.apellido_p,
