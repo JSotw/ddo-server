@@ -44,3 +44,22 @@ export const crearPagosIniciales = async (req, res) => {
       });
     }
   };
+
+  export const obtenerMediosPago = async (req, res) => {
+  
+    try {
+      const pagos = await tipoPagoModel.find();
+      if(pagos){
+        return res.status(200).json(pagos);
+      }else{
+        return res.status(404).json({
+          "mensaje": "No se pudieron recuperar resultados"
+        });
+      }
+      
+    } catch (error) {
+      return res.status(402).json({
+        "mensaje": error.message
+      });
+    }
+  };

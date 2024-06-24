@@ -10,7 +10,41 @@ import agregadoModel from "../models/agregado.model.js";
 import gastoModel from "../models/gasto.model.js";
 import { Int32 } from "mongodb";
 
-
+export const obtenerPedido = async (req, res) => {
+    try {
+      const pedido = await pedidoModel.findOne({ _id: req.params.id });
+      if (!pedido)
+        return res.status(404).json("No se encuentra el pedido");
+      res.status(200).json(pedido);
+    } catch (error) {
+      return res.status(404).json("Pedido no encontrado");
+    }
+  };
+  export const obtenerPedidos = async (req, res) => {
+      try {
+        const _desde = new Date(req.params.desde);
+        const _hasta = new Date(req.params.hasta);
+        let _params = {
+            createdAt: { $gte: _desde, $lte: _hasta}
+        };
+        if(req.query.estado !== undefined){
+            try{    
+                if(req.query.estado === "1"){
+                    _params['estado.pedido_abierto'] = true;
+                }else{
+                    _params['estado.pedido_abierto'] = false;
+                }
+            }catch(er){console.log(er)}
+        }
+        console.log(_params);
+        const pedidos = await pedidoModel.find(_params);
+        if (!pedidos)
+          return res.status(404).json("Datos recuperados");
+        res.status(200).json(pedidos);
+      } catch (error) {
+        return res.status(404).json("Pedidos no recuperados");
+      }
+    };
 export const crearPedido = async (req, res) => {
     const {
         id_usuario,
@@ -214,40 +248,33 @@ export const crearPedido = async (req, res) => {
                 }
             }
         }
+        let _estadoNombre = "En Proceso";
         if(estado != undefined){
-            const estadoPedido = await estadoModel.findOne({nombre: estado});
-            if(estadoPedido){
-                const nuevoPedido = new pedidoModel({
-                    id_usuario,
-                    nombre_retiro,
-                    detalles: _detallesValidados,
-                    pagos: _pagosValidados,
-                    monto_total: _montoTotal,
-                    estado: estadoPedido
-                });
-                const pedidoGuardado = await nuevoPedido.save();
-                return res.status(200).json({
-                "resultado": "Exito",
-                "mensaje": "Pedido registrado",
-                "datos": pedidoGuardado
-                });
-            }else{
-                return res.status(401).json({
-                  "resultado": "Error",
-                  "mensaje": "Estado de pedido requerido"
-                });
-            }
+            _estadoNombre = estado;
+        }
+        let estadoPedido = await estadoModel.findOne({nombre: _estadoNombre});
+        if(!estadoPedido){
+            estadoPedido = await estadoModel.findOne({nombre: "En Proceso"});
+        }
+        if(estadoPedido){
+            const nuevoPedido = new pedidoModel({
+                id_usuario,
+                nombre_retiro: nombre_retiro,
+                detalles: _detallesValidados,
+                pagos: _pagosValidados,
+                monto_total: _montoTotal,
+                estado: estadoPedido
+            });
+            const pedidoGuardado = await nuevoPedido.save();
+            return res.status(200).json(pedidoGuardado);
         }else{
             return res.status(401).json({
-              "resultado": "Error",
-              "mensaje": "Estado de pedido requerido"
+                "resultado": "Error",
+                "mensaje": "Estado de pedido no encontrado"
             });
         }
     } catch (error) {
-      return res.status(401).json({
-        "resultado": "Error",
-        "mensaje": error.message
-      });
+      return res.status(401).json(error.message);
     }
 };
 export const actualizarPedido = async (req, res) => {
@@ -271,86 +298,91 @@ export const actualizarPedido = async (req, res) => {
                     let _montoTotal = 0;
                     if(detalles != undefined){
                         if(detalles.length > 0){
-                        for(const det of detalles) {
-                            let _montoDetalle = 0;
-                            const producto = await productoModel.findOne({ _id: det.producto._id });
-                            if(producto){
-                                if(producto.activo){
-                                    const _ingredientesValidados = [];
-                                    let _montoAgregados = 0;
-                                    if(det.producto.agregados != undefined && det.producto.agregados != null){
-                                        for(const ag of det.producto.agregados){
-                                            if(ag.cantidad >= ag.minimo_selec && ag.cantidad <= ag.maximo_select){
-                                                if(ag.precio != undefined){
-                                                    const _montoAgregado = ag.cantidad * ag.precio;
-                                                    const agregadoValidado = new agregadoModel({
-                                                        nombre: ag.nombre,
-                                                        precio: ag.precio,
-                                                        minimo_selec: ag.minimo_selec,
-                                                        maximo_select: ag.maximo_select
-                                                    });
-                                                    let val = agregadoValidado.validateSync();
-                                                    if(val){
+                            for(const det of detalles) {
+                                let _cantidad = 0;
+                                if(det.cantidad != undefined && det.cantidad != null){
+                                    _cantidad = det.cantidad;
+                                }
+                                if(_cantidad > 0){
+                                    let _montoDetalle = 0;
+                                    const producto = await productoModel.findOne({ _id: det.producto._id });
+                                    if(producto){
+                                        if(producto.activo){
+                                            const _ingredientesValidados = [];
+                                            let _montoAgregados = 0;
+                                            if(det.agregados != undefined && det.agregados != null){
+                                                for(const ag of det.agregados){
+                                                    const agregado = producto.agregados.find((a) => a.nombre === ag.nombre);
+                                                    if(agregado){
+                                                        if(ag.cantidad >= agregado.minimo_selec && ag.cantidad <= agregado.maximo_select){
+                                                            if(agregado.precio != undefined){
+                                                                const _montoAgregado = ag.cantidad * agregado.precio;
+                                                                _ingredientesValidados.push(
+                                                                    new ingredienteModel({
+                                                                        agregado: agregado,
+                                                                        monto: _montoAgregado,
+                                                                        cantidad: ag.cantidad
+                                                                    })
+                                                                );
+                                                                _montoAgregados += _montoAgregado;
+                                                            }else{
+                                                                error = true;
+                                                                errorMessage = `Precio del agregado ${ag.nombre} no definido`;
+                                                                break;
+                                                            }
+                                                        }else{
+                                                            error = true;
+                                                            errorMessage = `${agregado.nombre} fuera de los límites (${agregado.minimo_selec}-${agregado.maximo_select})`;
+                                                            break;
+                                                        }
+                                                    }else{
                                                         error = true;
-                                                        errorMessage = val.message;
+                                                        errorMessage = `${ag.nombre} no está disponible para este producto`;
                                                         break;
                                                     }
-                                                    _ingredientesValidados.push(
-                                                        new ingredienteModel({
-                                                            agregado: agregadoValidado,
-                                                            monto: _montoAgregado,
-                                                            cantidad: ag.cantidad
-                                                        })
-                                                    );
-                                                    _montoAgregados += _montoAgregado;
-                                                }else{
-                                                    error = true;
-                                                    errorMessage = `Precio del agregado ${ag.nombre} no definido`;
+                                                }
+                                                if(error){
                                                     break;
                                                 }
-                                            }else{
+                                            }
+                                            _montoDetalle = (producto.precio_base + _montoAgregados) * det.cantidad;
+                                            _montoTotal += _montoDetalle;
+                                            let nuevoDetalle = new detallePedidoModel({
+                                                producto: producto,
+                                                ingredientes: _ingredientesValidados,
+                                                precio: producto.precio_base,
+                                                cantidad: det.cantidad,
+                                                monto_total: _montoDetalle
+                                            });
+                                            try{
+                                            let val = nuevoDetalle.validateSync();
+                                            if(val){
                                                 error = true;
-                                                errorMessage = `${ag.nombre} fuera de los límites`;
+                                                errorMessage = val.message;
                                                 break;
                                             }
-                                        }
-                                        if(error){
+                                            _detallesValidados.push(nuevoDetalle);
+                                            }catch(err){
+                                                error = true;
+                                                errorMessage = err.message;
+                                                break;
+                                            }
+                                        }else{
+                                            error = true;
+                                            errorMessage = "Producto "+producto.nombre+" inactivo";
                                             break;
                                         }
-                                    }
-                                    _montoDetalle = (det.precio + _montoAgregados) * det.cantidad;
-                                    _montoTotal += _montoDetalle;
-                                    let nuevoDetalle = new detallePedidoModel({
-                                        producto: producto,
-                                        ingredientes: _ingredientesValidados,
-                                        precio: det.precio,
-                                        cantidad: det.cantidad,
-                                        monto_total: _montoDetalle
-                                    });
-                                    try{
-                                    let val = nuevoDetalle.validateSync();
-                                    if(val){
+                                    }else{
                                         error = true;
-                                        errorMessage = val.message;
-                                        break;
-                                    }
-                                    _detallesValidados.push(nuevoDetalle);
-                                    }catch(err){
-                                        error = true;
-                                        errorMessage = err.message;
+                                        errorMessage = "Producto "+det.producto_id+" no encontrado";
                                         break;
                                     }
                                 }else{
                                     error = true;
-                                    errorMessage = "Producto "+producto.nombre+" inactivo";
+                                    errorMessage = "Producto "+det.producto_id+" sin cantidad";
                                     break;
                                 }
-                            }else{
-                                error = true;
-                                errorMessage = "Producto "+det.producto._id+" no encontrado";
-                                break;
                             }
-                        }
                         if(error){
                             return res.status(401).json({
                             "resultado": "Error",
@@ -452,35 +484,34 @@ export const actualizarPedido = async (req, res) => {
                             }
                         }
                     }
+                    let _estadoNombre = "En Proceso";
                     if(estado != undefined){
-
-                        const estadoPedido = await estadoModel.findOne({nombre: estado.nombre});
-                        if(estadoPedido){
-                            const updatePedido = await pedidoModel.findByIdAndUpdate(_id, {
-                                id_usuario: id_usuario,
-                                nombre_retiro: nombre_retiro,
-                                detalles: _detallesValidados,
-                                pagos: _pagosValidados,
-                                monto_total: _montoTotal,
-                                estado: estadoPedido
+                        _estadoNombre = estado
+                    }
+                    let estadoPedido = await estadoModel.findOne({nombre: _estadoNombre});
+                    if(!estadoPedido){
+                        estadoPedido = await estadoModel.findOne({nombre: "En Proceso"});
+                    }
+                    if(estadoPedido){
+                        const updatePedido = await pedidoModel.findByIdAndUpdate(_id, {
+                            id_usuario: id_usuario,
+                            nombre_retiro: nombre_retiro,
+                            detalles: _detallesValidados,
+                            pagos: _pagosValidados,
+                            monto_total: _montoTotal,
+                            estado: estadoPedido
+                        });
+                        const updated = await pedidoModel.findById(_id);
+                        if(updatePedido){
+                            return res.status(200).json({
+                            "resultado": "Exito",
+                            "mensaje": "Pedido actualizado",
+                            "datos": updated
                             });
-                            const updated = await pedidoModel.findById(_id);
-                            if(updatePedido){
-                                return res.status(200).json({
-                                "resultado": "Exito",
-                                "mensaje": "Pedido actualizado",
-                                "datos": updated
-                                });
-                            }else{
-                                return res.status(200).json({
-                                "resultado": "Error",
-                                "mensaje": "Pedido no actualizado"
-                                });
-                            }
                         }else{
-                            return res.status(401).json({
-                                "resultado": "Error",
-                                "mensaje": "Estado de pedido requerido"
+                            return res.status(200).json({
+                            "resultado": "Error",
+                            "mensaje": "Pedido no actualizado"
                             });
                         }
                     }else{
