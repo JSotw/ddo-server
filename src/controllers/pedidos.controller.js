@@ -842,3 +842,17 @@ export const reporteVentasXDia = async (req, res) => {
     });
   }
 };
+
+export const eliminarPedido = async (req, res) => {
+  try {
+    const pedido = await pedidoModel.findOneAndDelete({ _id: req.params.id });
+    if (!pedido){
+      return res.status(404).json("No se encuentra el pedido");
+    }
+    else{
+      return res.status(204).json("pedido eliminado");
+    }
+  } catch (error) {
+    return res.status(404).json("pedido no encontrado");
+  }
+};
