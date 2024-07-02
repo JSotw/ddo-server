@@ -13,6 +13,10 @@ export const crearEstadosIniciales = async (req, res) => {
         {
             "nombre": "Terminado",
             "pedidoAbierto": false
+        },
+        {
+            "nombre": "Cancelado",
+            "pedidoAbierto": false
         }
       ];
       estadosRegistrar.forEach(async estado => {

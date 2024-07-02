@@ -576,6 +576,30 @@ export const actualizarPedido = async (req, res) => {
     });
   }
 };
+
+export const actualizarEstadoPedido = async (req, res) => {
+  try {
+  let estadoPedido = await estadoModel.findOne({ nombre: req.body.estado });
+  console.log(req.body);
+  if (estadoPedido) {
+    console.log(estadoPedido);
+    const pedido = await pedidoModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        estado: estadoPedido,
+      },
+      { new: true }
+    );
+    if (!pedido)
+      return res.status(404).json({ message: "No se encuentra el pedido" });
+    res.json(pedido);
+  }else{
+    return res.status(404).json({ message: "Estado no encontrado" });
+  }
+  } catch (error) {
+    return res.status(404).json({ message: "Pedido no encontrado", error: error });
+  }
+};
 export const actualizarDetallePedido = async (req, res) => {
   const _id = req.params.id;
   const { detalles } = req.body;
